@@ -49,15 +49,10 @@ sealed class NavigationRoutes(
 
 
     // Nav Graph  Routes
-//    object BottomRoute : NavigationRoutes(route = BOTTOM_ROUTE) {
-//        fun createRoute(uid: String): String {
-//            return "BottomRoute/$uid"
-//        }
-//    }
 
     object HomeRoute : NavigationRoutes(route = HOME_ROUTE) {
-        fun createRoute(): String {
-            return "HomeRoute"
+        fun createRoute(uid: String): String {
+            return "HomeRoute/${uid}"
         }
     }
 
@@ -81,8 +76,8 @@ sealed class NavigationRoutes(
     }
 
     object LoginSingUpRoutes : NavigationRoutes(route = LOGIN_SIGNUP_ROUTE) {
-        fun createRoute(uid: String): String {
-            return "ProfileRoute"
+        fun createRoute(): String {
+            return "LoginSignUpRoute"
         }
     }
 
@@ -96,6 +91,10 @@ sealed class NavigationRoutes(
         fun createRoute(): String {
 //            return NAV_HOME.substringBefore("{").plus(uid)
             return "Home"
+        }
+
+        fun createGraphRouth(uid: String): String {
+            return "HomeRoute/${uid}"
         }
     }
 

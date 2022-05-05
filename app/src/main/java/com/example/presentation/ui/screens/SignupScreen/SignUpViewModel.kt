@@ -1,4 +1,4 @@
-package com.example.presentation.ui.screens.signupScreen
+package com.example.presentation.ui.screens.SignupScreen
 
 import android.util.Log
 import androidx.compose.runtime.getValue

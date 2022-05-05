@@ -45,7 +45,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.LifecycleOwner
-import com.example.presentation.HomeViewModel
+import com.example.presentation.ui.screens.HomeScreen.HomeViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -506,7 +506,7 @@ fun Greeting(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     viewModel: HomeViewModel,
-    navigateLogin: () -> Unit
+    navigateSecondScreen: () -> Unit
 ) {
     // Creates a CoroutineScope bound to the MoviesScreen's lifecycle
     val scope = rememberCoroutineScope()
@@ -561,7 +561,7 @@ fun Greeting(
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 scope.launch {
-                    navigateLogin()
+                    navigateSecondScreen()
                 }
             }) {
                 Icon(
@@ -582,6 +582,13 @@ fun Greeting(
                     .fillMaxWidth()
                     .background(MaterialTheme.colors.primary)
             ) {
+//                when (userData) {
+//                    is State.Success -> {
+//                        Log.d(TAG, "GreetingUserData : ${userData.data?.email}")
+//                        userData.data?.email?.let { Text(text = it) }
+//                    }
+//                    else -> {}
+//                }
                 when (val dataSet = viewModel.usersState) {
                     is State.Failed -> {
                         Text(

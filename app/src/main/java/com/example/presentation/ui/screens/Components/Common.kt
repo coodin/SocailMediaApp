@@ -1,4 +1,4 @@
-package com.example.presentation.ui.screens.components
+package com.example.presentation.ui.screens.Components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -64,11 +64,11 @@ fun AutoSizeText(text: String, textStyle: TextStyle) {
 }
 
 @Composable
-fun VertiaclSpacer(space: Dp) {
+fun VerticalSpacer(space: Dp) {
     Spacer(modifier = Modifier.height(space))
 }
 
 @Composable
-fun HorizantalSpacer(space: Dp) {
+fun HorizontalSpacer(space: Dp) {
     Spacer(modifier = Modifier.width(space))
 }

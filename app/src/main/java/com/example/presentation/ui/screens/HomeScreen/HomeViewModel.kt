@@ -1,4 +1,4 @@
-package com.example.presentation
+package com.example.presentation.ui.screens.HomeScreen
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -11,6 +11,7 @@ import com.example.data.repository.FirebaseRepository
 import com.example.domain.model.City
 import com.example.domain.model.UserProfile
 import com.example.domain.use_case.UseCases
+import com.example.presentation.ui.screens.Graphs.destinations.HomeDesDestination
 import com.example.utility.EXCEPTION
 import com.example.utility.State
 import com.example.utility.TAG
@@ -30,33 +31,33 @@ class HomeViewModel @Inject constructor(
 //    val dataset:StateFlow<ResultOf<QuerySnapshot?>?> = _dataset
     var usersState by mutableStateOf<State<List<UserProfile?>>?>(null)
         private set
+    var userState by mutableStateOf<State<UserProfile?>?>(null)
+        private set
     var documentState by mutableStateOf<State<City?>?>(null)
         private set
     //var job: Job? = null
 
     override fun onCleared() {
         super.onCleared()
-        Log.d(TAG, "The MainViewModel has been destroyed")
+        Log.d(TAG, "The HomeViewModel has been destroyed")
     }
 
     init {
-        Log.d(TAG, "The MainViewModel has been created")
-        Log.d(TAG, "The User UID: " + savedStateHandle.get<String>("ID"))
+        Log.d(TAG, "The HomeViewModel has been created")
+        Log.d(TAG, "Idoftheuser${HomeDesDestination.argsFrom(savedStateHandle).id}")
+
         getUsers()
-//        job = viewModelScope.launch {
-//            try {
-//                repository.getDocuments().collect { state ->
-//                    usersState = state
-//                }
-//            } catch (e: Throwable) {
-//                Log.d(EXCEPTION, "Exception $e")
-//            }
-//        }
     }
 
     private fun getUsers() {
         viewModelScope.launch {
             useCases.getUsers().collect { value -> usersState = value }
+        }
+    }
+
+    private fun getUser(userID: String) {
+        viewModelScope.launch {
+            useCases.getUser(userID).collect { value -> userState = value }
         }
     }
 

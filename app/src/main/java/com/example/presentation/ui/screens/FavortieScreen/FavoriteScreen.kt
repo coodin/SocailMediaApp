@@ -1,4 +1,4 @@
-package com.example.presentation.ui.screens.favortieScreen
+package com.example.presentation.ui.screens.FavortieScreen
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*

@@ -1,4 +1,4 @@
-package com.example.presentation.ui.screens.loginScreen
+package com.example.presentation.ui.screens.LoginScreen
 
 import android.net.Uri
 import androidx.activity.compose.BackHandler
@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.loginsignupcompose.R
-import com.example.presentation.ui.screens.components.*
+import com.example.presentation.ui.screens.Components.*
 import com.example.presentation.ui.theme.AppTheme
 import com.example.presentation.ui.theme.colorOfFacebook
 import com.example.utility.State
@@ -44,6 +44,7 @@ import kotlinx.coroutines.launch
 fun Login(
     viewModel: LoginViewModel,
     navigateMain: (uid: String?) -> Unit,
+    //navigateMain: (uid: UserProfile?) -> Unit,
     navigateSignUp: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
@@ -137,19 +138,19 @@ fun Login(
                         text = "Welcome back",
                         MaterialTheme.typography.h3
                     )
-                    VertiaclSpacer(space = AppTheme.dimens.grid_1)
+                    VerticalSpacer(space = AppTheme.dimens.grid_1)
                     GoogleOrFacebook(
                         text = "Sign In With Google",
                         icon = painterResource(id = R.drawable.icons8_google)
                     )
-                    VertiaclSpacer(space = AppTheme.dimens.grid_2)
+                    VerticalSpacer(space = AppTheme.dimens.grid_2)
                     GoogleOrFacebook(
                         text = "Sign In With Facebook",
                         icon = painterResource(id = R.drawable.ic_icons8_facebook),
                         contentColor = AppTheme.colors.colorOfFacebook,
                         backgroundColor = Color.White
                     )
-                    VertiaclSpacer(space = AppTheme.dimens.grid_1)
+                    VerticalSpacer(space = AppTheme.dimens.grid_1)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -159,9 +160,9 @@ fun Login(
                                 .height(1.dp)
                                 .weight(1f), color = Color.Gray
                         )
-                        HorizantalSpacer(space = AppTheme.dimens.grid_2)
+                        HorizontalSpacer(space = AppTheme.dimens.grid_2)
                         Text(text = "or", color = Color.LightGray)
-                        HorizantalSpacer(space = AppTheme.dimens.grid_2)
+                        HorizontalSpacer(space = AppTheme.dimens.grid_2)
                         Divider(
                             modifier = Modifier
                                 .height(1.dp)
@@ -169,14 +170,14 @@ fun Login(
                         )
 
                     }
-                    VertiaclSpacer(space = AppTheme.dimens.grid_1)
+                    VerticalSpacer(space = AppTheme.dimens.grid_1)
                     OutlinedTextField(
                         value = email,
                         label = { Text(text = "Email") },
                         onValueChange = { newValue -> email = newValue },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text(text = "Email") })
-                    VertiaclSpacer(space = AppTheme.dimens.grid_1)
+                    VerticalSpacer(space = AppTheme.dimens.grid_1)
                     OutlinedTextField(
                         value = password,
                         onValueChange = { newValue ->
@@ -202,11 +203,11 @@ fun Login(
                             }
                         }
                     )
-                    VertiaclSpacer(space = AppTheme.dimens.grid_2)
+                    VerticalSpacer(space = AppTheme.dimens.grid_2)
                     Button(
                         onClick = {
                             coroutineScope.launch {
-                               // viewModel.signIn(email.trim(), password.trim())
+                                //viewModel.signIn(email.trim(), password.trim())
                                 navigateMain("123")
                             }
                         },
@@ -221,7 +222,7 @@ fun Login(
                     ) {
                         Text(text = "Login")
                     }
-                    VertiaclSpacer(space = AppTheme.dimens.grid_2)
+                    VerticalSpacer(space = AppTheme.dimens.grid_2)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
@@ -237,7 +238,7 @@ fun Login(
                             }
                         )
                     }
-                    VertiaclSpacer(space = AppTheme.dimens.grid_1)
+                    VerticalSpacer(space = AppTheme.dimens.grid_1)
                 }
             }
             TemporaryScreen(loading)

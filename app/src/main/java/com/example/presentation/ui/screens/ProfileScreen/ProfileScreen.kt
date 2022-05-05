@@ -1,15 +1,24 @@
-package com.example.presentation.ui.screens.profileScreen
+package com.example.presentation.ui.screens.ProfileScreen
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
+import android.hardware.camera2.CameraCharacteristics
 import android.net.Uri
 import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
+import android.util.Log
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.LinearLayout
+import androidx.activity.compose.BackHandler
+import androidx.camera.camera2.interop.Camera2CameraInfo
+import androidx.camera.core.*
+import androidx.camera.core.ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,7 +34,6 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +42,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -41,15 +50,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.*
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
-import coil.compose.rememberAsyncImagePainter
 import com.example.loginsignupcompose.R
-import com.example.presentation.ui.screens.components.VertiaclSpacer
+import com.example.presentation.ui.screens.Components.VerticalSpacer
 import com.example.presentation.ui.theme.AppTheme
-import com.example.utility.Country
-import com.example.utility.getFlagEmojiFor
-import com.example.utility.NoRippleTheme
+import com.example.utility.*
 import com.google.accompanist.permissions.*
+import kotlinx.coroutines.launch
+import java.io.File
 
 
 @Composable
@@ -396,7 +405,7 @@ fun ProfileSettings(viewModel: ProfileViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        VertiaclSpacer(space = AppTheme.dimens.grid_4)
+        VerticalSpacer(space = AppTheme.dimens.grid_4)
         ImagePickerView(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             lastSelectedImage = viewModel.pickedImage,
@@ -404,7 +413,7 @@ fun ProfileSettings(viewModel: ProfileViewModel) {
                 viewModel.pickedImage = it
             }
         )
-        VertiaclSpacer(space = AppTheme.dimens.grid_4)
+        VerticalSpacer(space = AppTheme.dimens.grid_4)
         AppTextField(
             text = viewModel.firstName,
             placeholder = "First Name",
@@ -420,7 +429,7 @@ fun ProfileSettings(viewModel: ProfileViewModel) {
             )
         )
 
-        VertiaclSpacer(space = AppTheme.dimens.grid_2)
+        VerticalSpacer(space = AppTheme.dimens.grid_2)
 
         AppTextField(
             text = viewModel.password,
@@ -451,7 +460,7 @@ fun ProfileSettings(viewModel: ProfileViewModel) {
             )
         )
 
-        VertiaclSpacer(space = AppTheme.dimens.grid_2)
+        VerticalSpacer(space = AppTheme.dimens.grid_2)
 
         AppTextField(
             modifier = Modifier.padding(vertical = 8.dp),
@@ -479,7 +488,7 @@ fun ProfileSettings(viewModel: ProfileViewModel) {
             )
         )
 
-        VertiaclSpacer(space = AppTheme.dimens.grid_2)
+        VerticalSpacer(space = AppTheme.dimens.grid_2)
 
         AppTextField(
             modifier = Modifier.clickable {
@@ -674,15 +683,142 @@ fun ImagePickerView(
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun Permission(
-    permission: String = Manifest.permission.CAMERA,
+    modifier: Modifier = Modifier,
+    permissions: List<String> = listOf(Manifest.permission.CAMERA),
     rationale: String = "This permission is important for this app. Please grant the permission.",
-    permissionNotAvailableContent: @Composable () -> Unit = { },
-    onDrawableChange: (Int) -> Unit,
     isOpen: Boolean,
-    onActivateAlert: (Boolean) -> Unit
+    onActivateAlert: (Boolean) -> Unit,
+    onImageFile: (File) -> Unit = { }
 ) {
-    val permissionState = rememberPermissionState(permission)
+//    var isCameraOpen by rememberSaveable() {
+//        mutableStateOf(true)
+//    }
+    val context = LocalContext.current
+    val sendToSettings = {
+        context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", context.packageName, null)
+        })
+    }
+//    val permissionsState = rememberMultiplePermissionsState(permissions)
+//    permissionsState.permissions.forEach { permissionState ->
+//        when (permissionState.permission) {
+//            Manifest.permission.CAMERA -> {
+//                when {
+//                    permissionState.status.isGranted -> {
+//                        //Text(text = "Camera permission accepted")
+//                        //onActivateAlert.invoke(false)
+//                        return@forEach
+//                    }
+//                    permissionState.status.shouldShowRationale -> {
+//                        Rationale(
+//                            text = "This permission enable to accept to camera to take picture",
+//                            onRequestPermission = {
+//                                permissionsState.launchMultiplePermissionRequest()
+//                            },
+//                            isOpen = isOpen,
+//                            onCancel = { onActivateAlert.invoke(false) }
+//                        )
+//                    }
+//                    permissionState.status.isPermanentlyDenied() -> {
+//                        Rationale(
+//                            text = "Camera permission was permanently" +
+//                                    "denied. You can enable it in the app" +
+//                                    "settings.",
+//                            onRequestPermission = {
+//                                sendToSettings.invoke()
+//                            },
+//                            onCancel = { onActivateAlert.invoke(false) },
+//                            isOpen = isOpen,
+//                            permissionFullDenied = true
+//                        )
+////                        Text(
+////                            text = "Camera permission was permanently" +
+////                                    "denied. You can enable it in the app" +
+////                                    "settings."
+////                        )
+//                    }
+//                }
+//            }
+//            Manifest.permission.WRITE_EXTERNAL_STORAGE -> {
+//                when {
+//                    permissionState.status.isGranted -> {
+//                        //Text(text = "Camera permission accepted")
+//                        //onActivateAlert.invoke(false)
+//                        return@forEach
+//                    }
+//                    permissionState.status.shouldShowRationale -> {
+//                        Rationale(
+//                            "This permission is needed to save  pictures you took to external storage ",
+//                            onRequestPermission = {
+//                                permissionsState.launchMultiplePermissionRequest()
+//                            },
+//                            isOpen = isOpen,
+//                            onCancel = { onActivateAlert.invoke(false) }
+//                        )
+//                    }
+//                    permissionState.status.isPermanentlyDenied() -> {
+//                        Rationale(
+//                            text = "Write External permission was permanently" +
+//                                    "denied. You can enable it in the app" +
+//                                    "settings.",
+//                            onRequestPermission = { sendToSettings.invoke() },
+//                            onCancel = { onActivateAlert.invoke(false) },
+//                            isOpen = isOpen,
+//                            permissionFullDenied = true
+//                        )
+////                        Text(
+////                            text = "Camera permission was permanently" +
+////                                    "denied. You can enable it in the app" +
+////                                    "settings."
+////                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    if (permissionsState.allPermissionsGranted) {
+//        if (isOpen) {
+//            CameraCapture(
+//                //isOpen = isOpen,
+//                closeCameraHandler = onActivateAlert,
+//                modifier = Modifier,
+//                onImageFile = onImageFile
+//            )
+//        }
+//    }
+//        permissionsState.shouldShowRationale
+//    if (permissionsState.shouldShowRationale) {
+//        Rationale(
+//            rationale,
+//            onRequestPermission = {
+//                permissionsState.launchMultiplePermissionRequest()
+//            },
+//            isOpen = isOpen,
+//            onCancel = { onActivateAlert.invoke(false) }
+//        )
+//    }
+//    if (permissionsState.allPermissionsGranted) {
+//        if (isOpen) {
+//            CameraCapture(
+//                //isOpen = isOpen,
+//                closeCameraHandler = onActivateAlert,
+//                modifier = Modifier,
+//                onImageFile = onImageFile
+//            )
+//        }
+//    } else {
+//        Rationale(
+//            "Camera permission required for this feature to be available.Please grant the permission",
+//            onRequestPermission = {
+//                Log.d(TAG,"Pressed")
+//                permissionsState.launchMultiplePermissionRequest()
+//            },
+//            isOpen = isOpen,
+//            onCancel = { onActivateAlert.invoke(false) },
+//        )
+//    }
 
+//    val permissionState = rememberPermissionState(permission = )
 //    when{
 //        permissionState.status.isGranted -> {
 //            content()
@@ -697,74 +833,216 @@ fun Permission(
 //            Text(text = "Permission fully denied. Go to settings to enable")
 //        }
 //    }
-
-
-    when (permissionState.status) {
-        // If the camera permission is granted, then show screen with the feature enabled
-        is PermissionStatus.Granted -> {
-            // Text("Camera permission Granted")
-            // content()
-            onDrawableChange(R.drawable.ellipse)
-        }
-        is PermissionStatus.Denied -> {
-                if ((permissionState.status as PermissionStatus.Denied).shouldShowRationale) {
-                    // If the user has denied the permission but the rationale can be shown,
-                    // then gently explain why the app requires this permission
-                    Rationale(
-                        rationale,
-                        onRequestPermission = {
-                            permissionState.launchPermissionRequest()
-                        },
-                        isOpen = isOpen,
-                        onCancel = { onActivateAlert.invoke(false) }
-                    )
-                } else {
-                    // If it's the first time the user lands on this feature, or the user
-                    // doesn't want to be asked again for this permission, explain that the
-                    // permission is required
-                    // permissionNotAvailableContent()
-                    Rationale(
-                        "Camera permission required for this feature to be available.Please grant the permission",
-                        onRequestPermission = {
-                            permissionState.launchPermissionRequest()
-                        },
-                        isOpen = isOpen,
-                        onCancel = { onActivateAlert.invoke(false) },
-                    )
-                }
-        }
-    }
+//    when (permissionState.status) {
+//        // If the camera permission is granted, then show screen with the feature enabled
+//        is PermissionStatus.Granted -> {
+//            // Text("Camera permission Granted")
+//            // content()
+//            //onDrawableChange(R.drawable.ellipse)
+//            if (isOpen) {
+//                CameraCapture(
+//                    //isOpen = isOpen,
+//                    closeCameraHandler = onActivateAlert,
+//                    modifier = Modifier,
+//                    onImageFile = onImageFile
+//                )
+//            }
+//        }
+//        is PermissionStatus.Denied -> {
+//            if ((permissionState.status as PermissionStatus.Denied).shouldShowRationale) {
+//                // If the user has denied the permission but the rationale can be shown,
+//                // then gently explain why the app requires this permission
+//                Rationale(
+//                    rationale,
+//                    onRequestPermission = {
+//                        permissionState.launchMultiplePermissionRequest()
+//                    },
+//                    isOpen = isOpen,
+//                    onCancel = { onActivateAlert.invoke(false) }
+//                )
+//            } else {
+//                // If it's the first time the user lands on this feature, or the user
+//                // doesn't want to be asked again for this permission, explain that the
+//                // permission is required
+//                // permissionNotAvailableContent()
+//                Rationale(
+//                    "Camera permission required for this feature to be available.Please grant the permission",
+//                    onRequestPermission = {
+//                        permissionState.launchMultiplePermissionRequest()
+//                    },
+//                    isOpen = isOpen,
+//                    onCancel = { onActivateAlert.invoke(false) },
+//                )
+//            }
+//        }
+//    }
 }
 
 
 @Composable
-private fun Rationale(
-    text: String,
-    onRequestPermission: () -> Unit,
-    onCancel: () -> Unit,
-    isOpen: Boolean
+fun CameraCapture(
+    // isOpen: Boolean,
+    closeCameraHandler: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
+    onImageFile: (Uri?) -> Unit = { }
+    //onChangeImageCapture: (ImageCapture) -> Unit,
+    //imageCapture: ImageCapture,
+    //cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
 ) {
-
-    if (isOpen) {
-        AlertDialog(
-            onDismissRequest = { onCancel() },
-            dismissButton = {
-                Button(onClick = { onCancel() }) {
-                    Text("Cancel")
-                }
-            },
-            title = {
-                Text(text = "Permission request")
-            },
-            text = {
-                Text(text)
-            },
-            confirmButton = {
-                Button(onClick = onRequestPermission) {
-                    Text("Ok")
-                }
-            }
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val coroutineScope = rememberCoroutineScope()
+    var previewUseCase by remember { mutableStateOf<UseCase>(Preview.Builder().build()) }
+    var cameraProvider by remember {
+        mutableStateOf<ProcessCameraProvider?>(null)
+    }
+    val imageCaptureUseCase by remember {
+        mutableStateOf(
+            ImageCapture.Builder()
+                .setCaptureMode(CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .build()
         )
     }
+    // if (isOpen) {
+    LaunchedEffect(previewUseCase) {
+        cameraProvider = context.getCameraProvider()
+        try {
+            // Must unbind the use-cases before rebinding them.
+            cameraProvider?.unbindAll()
+            cameraProvider?.bindToLifecycle(
+                lifecycleOwner, cameraSelector, previewUseCase, imageCaptureUseCase
+            )
+        } catch (ex: Exception) {
+            Log.e("CameraCapture", "Failed to bind camera use cases", ex)
+        }
+    }
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CameraPreview(
+                closeCameraHandler,
+                onUseCase = {
+                    previewUseCase = it
+                },
+                cameraProvider = cameraProvider
+            )
+            CapturePictureButton(
+                onClick = {
+                    coroutineScope.launch {
+                        onImageFile.invoke(imageCaptureUseCase.takePicture(context.executor, context))
+                        cameraProvider?.unbindAll()
+                        closeCameraHandler.invoke(false)
+                    }
+                },
+                modifier = Modifier
+                    .size(100.dp)
+                    .align(Alignment.BottomCenter),
+                content = { Text(text = "Take Photo") }
+            )
+        }
+    }
+    // }
+}
 
+@Composable
+fun CapturePictureButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = { },
+    content: @Composable () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val color = if (isPressed) Color.Blue else Color.Black
+    val contentPadding = PaddingValues(if (isPressed) 8.dp else 12.dp)
+    OutlinedButton(
+        modifier = modifier,
+        shape = CircleShape,
+        border = BorderStroke(2.dp, Color.Black),
+        contentPadding = contentPadding,
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black),
+        onClick = onClick,
+        enabled = false
+    ) {
+        Button(
+            modifier = Modifier
+                .fillMaxSize(),
+            shape = CircleShape,
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = color
+            ),
+            interactionSource = interactionSource,
+            onClick = onClick
+        ) {
+            content.invoke()
+        }
+    }
+}
+
+@Composable
+fun CameraPreview(
+    closeCameraHandler: (Boolean) -> Unit,
+    onUseCase: (UseCase) -> Unit = { },
+    cameraProvider: ProcessCameraProvider? = null
+) {
+    //val context = LocalContext.current
+    //val outputFileOptions = ImageCapture.OutputFileOptions.Builder(File()).build()
+//    var imageCapture: ImageCapture? by remember {
+//        mutableStateOf(null)
+//    }
+    //val lifecycle = LocalLifecycleOwner.current
+//    var cameraProvider: ProcessCameraProvider? by remember {
+//        mutableStateOf(null)
+//    }
+    //val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+//
+    BackHandler {
+        cameraProvider?.unbindAll()
+        closeCameraHandler.invoke(false)
+    }
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = {
+            PreviewView(it).apply {
+                setBackgroundColor(Color.Black.toArgb())
+                layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+                scaleType = PreviewView.ScaleType.FILL_CENTER
+                implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+            }
+        },
+        update = { previewView ->
+            onUseCase(
+                Preview.Builder()
+                    .build()
+                    .also {
+                        it.setSurfaceProvider(previewView.surfaceProvider)
+                    }
+            )
+        })
+
+}
+
+@SuppressLint("UnsafeOptInUsageError")
+private fun selectExternalOrBestCamera(provider: ProcessCameraProvider): CameraSelector? {
+    val cam2Infos = provider.availableCameraInfos.map {
+        Camera2CameraInfo.from(it)
+    }.sortedByDescending {
+        // HARDWARE_LEVEL is Int type, with the order of:
+        // LEGACY < LIMITED < FULL < LEVEL_3 < EXTERNAL
+        it.getCameraCharacteristic(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL)
+    }
+
+    return when {
+        cam2Infos.isNotEmpty() -> {
+            Log.d(TAG, "The camera has been restricted")
+            CameraSelector.Builder()
+                .addCameraFilter {
+                    it.filter { camInfo ->
+                        // cam2Infos[0] is either EXTERNAL or best built-in camera
+                        val thisCamId = Camera2CameraInfo.from(camInfo).cameraId
+                        thisCamId == cam2Infos[0].cameraId
+                    }
+                }.build()
+        }
+        else -> null
+    }
 }

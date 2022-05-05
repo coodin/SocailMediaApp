@@ -1,4 +1,4 @@
-package com.example.presentation.ui.screens.splashScreen
+package com.example.presentation.ui.screens.SplashScreen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween

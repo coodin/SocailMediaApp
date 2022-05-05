@@ -6,6 +6,7 @@ import com.example.domain.model.UserProfile
 import com.example.domain.repository.UserRepository
 import com.example.utility.State
 import com.example.utility.TAG
+import com.example.utility.listenDocument
 import com.example.utility.listenDocuments
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
@@ -376,6 +377,10 @@ class FirebaseRepository @Inject constructor(val firebase: Firebase) : UserRepos
 
     override suspend fun getUsers(): Flow<State<List<UserProfile?>>> {
         return db.collection("users").listenDocuments<UserProfile>()
+    }
+
+    override suspend fun getUser(userId: String): Flow<State<UserProfile?>> {
+        return db.collection("users").document(userId).listenDocument()
     }
 
 

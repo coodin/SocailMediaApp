@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.*
 import com.example.loginsignupcompose.R
-import com.example.presentation.ui.screens.components.HorizantalSpacer
+import com.example.presentation.ui.screens.Components.HorizontalSpacer
 import com.example.presentation.ui.theme.AppTheme
 import com.example.utility.TAG
 
@@ -114,7 +114,7 @@ fun ItemCard() {
             painter = painterResource(id = R.drawable.message_photo),
             contentDescription = "Message Avatar"
         )
-        HorizantalSpacer(space = AppTheme.dimens.grid_1)
+        HorizontalSpacer(space = AppTheme.dimens.grid_1)
         Surface(
             modifier =
             Modifier

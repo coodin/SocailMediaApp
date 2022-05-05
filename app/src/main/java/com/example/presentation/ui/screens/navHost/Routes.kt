@@ -8,7 +8,7 @@ const val NAV_CHAT_SCREEN = "ChatScreen"
 
 
 const val NAV_HOME = "Home"
-const val HOME_ROUTE = "HomeRoute"
+const val HOME_ROUTE = "HomeRoute/{ID}"
 
 const val NAV_FAV = "Fav"
 const val FAVORITE_ROUTE = "FavoriteRoute"
@@ -25,17 +25,3 @@ const val NAV_SINGUP = "Signup"
 const val NAV_LOGIN = "Login"
 
 const val BOTTOM_ROUTE = "BottomRoute/{ID}"
-
-
-val routes =
-    listOf(
-        NAV_HOME,
-        NAV_FAV,
-        NAV_FEED,
-        NAV_PROFILE,
-        NAV_SPLASH,
-        LOGIN_SIGNUP_ROUTE,
-        NAV_SINGUP,
-        NAV_LOGIN,
-        BOTTOM_ROUTE
-    )

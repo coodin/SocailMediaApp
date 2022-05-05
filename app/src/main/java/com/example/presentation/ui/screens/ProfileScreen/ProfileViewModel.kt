@@ -1,4 +1,4 @@
-package com.example.presentation.ui.screens.profileScreen
+package com.example.presentation.ui.screens.ProfileScreen
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog

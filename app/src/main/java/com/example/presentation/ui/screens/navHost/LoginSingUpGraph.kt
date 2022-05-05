@@ -5,27 +5,31 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.example.presentation.ui.screens.loginScreen.Login
-import com.example.presentation.ui.screens.loginScreen.LoginViewModel
-import com.example.presentation.ui.screens.signupScreen.SignUpScreen
-import com.example.presentation.ui.screens.signupScreen.SignUpViewModel
+import com.example.presentation.ui.screens.LoginScreen.Login
+import com.example.presentation.ui.screens.LoginScreen.LoginViewModel
+import com.example.presentation.ui.screens.SignupScreen.SignUpScreen
+import com.example.presentation.ui.screens.SignupScreen.SignUpViewModel
 
 fun NavGraphBuilder.loginSignUpScreen(navController: NavController) {
-    navigation(startDestination = NavigationRoutes.Login.route, route = NavigationRoutes.LoginSingUpRoutes.route) {
+    navigation(
+        startDestination = NavigationRoutes.Login.route,
+        route = NavigationRoutes.LoginSingUpRoutes.route
+    ) {
         composable(
             route = NavigationRoutes.Login.route,
         ) {
             val loginViewModel = hiltViewModel<LoginViewModel>()
-            Login(loginViewModel,
+            Login(
+                loginViewModel,
                 navigateMain = { uid ->
                     navController.navigate(NavigationRoutes.Main.createRoute(uid!!)) {
-                        popUpTo(NavigationRoutes.Login.createRoute()) {
+                        popUpTo(NavigationRoutes.LoginSingUpRoutes.route) {
                             inclusive = true
                         }
                     }
                 },
                 navigateSignUp = {
-                    navController.navigate(NAV_SINGUP)
+                    navController.navigate(NavigationRoutes.SingUp.createRoute())
                 }
             )
         }
@@ -37,7 +41,7 @@ fun NavGraphBuilder.loginSignUpScreen(navController: NavController) {
                 navController.popBackStack(route = NAV_LOGIN,inclusive = true)
                  */
                 navController.navigate(NavigationRoutes.Main.createRoute(uid!!)) {
-                    popUpTo(NavigationRoutes.Login.createRoute()) {
+                    popUpTo(NavigationRoutes.LoginSingUpRoutes.route) {
                         inclusive = true
                     }
                 }
