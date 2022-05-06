@@ -207,8 +207,8 @@ fun Login(
                     Button(
                         onClick = {
                             coroutineScope.launch {
-                                //viewModel.signIn(email.trim(), password.trim())
-                                navigateMain("123")
+                                viewModel.signIn(email.trim(), password.trim())
+                                //navigateMain("123")
                             }
                         },
                         modifier = Modifier

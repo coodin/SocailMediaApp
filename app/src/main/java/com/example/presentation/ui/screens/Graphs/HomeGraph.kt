@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.presentation.ui.screens.Graphs.destinations.HomeDesDestination
+import com.example.presentation.ui.screens.Graphs.destinations.LoginDesDestination
 import com.example.presentation.ui.screens.Graphs.destinations.SecondScreenDesDestination
 import com.example.presentation.ui.screens.HomeScreen.Home
 import com.example.presentation.ui.screens.HomeScreen.HomeViewModel
@@ -28,12 +29,12 @@ data class HomeDesNavArgs(
 @Destination(navArgsDelegate = HomeDesNavArgs::class)
 @Composable
 fun HomeDes(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     Home(
         viewModel = viewModel,
-        navigateSecondScreen = { navController.navigateTo(SecondScreenDesDestination) }
+        navigateSecondScreen = { navigator.navigate(SecondScreenDesDestination) },
     )
 }
 
@@ -42,8 +43,8 @@ fun HomeDes(
 @Destination
 @Composable
 fun SecondScreenDes(
-    navController: DestinationsNavigator
+    navigator: DestinationsNavigator
 ) {
-    NewComposable(navigate = { navController.navigate(HomeDesDestination()) })
+    NewComposable(navigate = { navigator.navigate(HomeDesDestination()) })
 }
 

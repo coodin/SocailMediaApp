@@ -8,6 +8,7 @@ import com.example.utility.State
 import com.example.utility.TAG
 import com.example.utility.listenDocument
 import com.example.utility.listenDocuments
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -379,8 +380,17 @@ class FirebaseRepository @Inject constructor(val firebase: Firebase) : UserRepos
         return db.collection("users").listenDocuments<UserProfile>()
     }
 
-    override suspend fun getUser(userId: String): Flow<State<UserProfile?>> {
+    override suspend fun getUser(): Flow<State<UserProfile?>> {
+        val userId = currentUserId()
         return db.collection("users").document(userId).listenDocument()
+    }
+
+    override suspend fun currentUser(): Boolean {
+        return firebase.auth.currentUser != null
+    }
+
+    private fun currentUserId(): String {
+        return firebase.auth.currentUser?.uid ?: "no User"
     }
 
 

@@ -68,7 +68,7 @@ fun NavGraphBuilder.home(navController: NavController) {
                 viewModel = sharedViewModel,
                 navigateSecondScreen = {
                     navController.navigate("NewComposable")
-                },
+                }
             )
         }
         composable("NewComposable") {

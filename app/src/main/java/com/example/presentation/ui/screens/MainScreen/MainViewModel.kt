@@ -30,7 +30,7 @@ class MainViewModel @Inject constructor(
 
     private fun getUser() {
         viewModelScope.launch {
-            useCase.getUser(userID).collect { data -> userState = data }
+            useCase.getUser().collect { data -> userState = data }
         }
     }
 }

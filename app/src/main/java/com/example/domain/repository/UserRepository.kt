@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
     suspend fun getUsers(): Flow<State<List<UserProfile?>>>
-    suspend fun getUser(userId:String): Flow<State<UserProfile?>>
+    suspend fun getUser(): Flow<State<UserProfile?>>
+    suspend fun currentUser(): Boolean
 }

@@ -506,7 +506,7 @@ fun Greeting(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     viewModel: HomeViewModel,
-    navigateSecondScreen: () -> Unit
+    navigateSecondScreen: () -> Unit,
 ) {
     // Creates a CoroutineScope bound to the MoviesScreen's lifecycle
     val scope = rememberCoroutineScope()
@@ -582,14 +582,7 @@ fun Greeting(
                     .fillMaxWidth()
                     .background(MaterialTheme.colors.primary)
             ) {
-//                when (userData) {
-//                    is State.Success -> {
-//                        Log.d(TAG, "GreetingUserData : ${userData.data?.email}")
-//                        userData.data?.email?.let { Text(text = it) }
-//                    }
-//                    else -> {}
-//                }
-                when (val dataSet = viewModel.usersState) {
+                when (val dataSet = viewModel.userState) {
                     is State.Failed -> {
                         Text(
                             dataSet.message,
@@ -602,7 +595,7 @@ fun Greeting(
                                 .wrapContentWidth()
                                 .background(Color.DarkGray)
                         ) {
-                            items(dataset) {
+                            item{
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -611,7 +604,7 @@ fun Greeting(
                                         LocalContentColor provides Color.White,
                                         LocalTextStyle provides MaterialTheme.typography.body1
                                     ) {
-                                        Text(it?.email ?: "")
+                                        Text(dataset?.email ?: "")
                                         //Text(it?.country ?: "")
                                         //Text("${it?.population}")
                                     }
@@ -727,11 +720,3 @@ fun Greeting(
         }
     }
 }
-
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun DefaultPreview() {
-//    LoginSignUpComposeTheme {
-//        Welcome()
-//    }
-//}

@@ -25,8 +25,11 @@ import com.example.presentation.ui.screens.Graphs.appCurrentDestinationAsState
 import com.example.presentation.ui.screens.Graphs.destinations.Destination
 import com.example.presentation.ui.screens.HomeScreen.HomeViewModel
 import com.example.presentation.ui.screens.ProfileScreen.ProfileViewModel
+import com.example.presentation.ui.theme.AppTheme
 import com.example.presentation.ui.theme.LoginSignUpComposeTheme
 import com.example.utility.TAG
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigateTo
@@ -34,36 +37,34 @@ import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.contains
 import com.ramcosta.composedestinations.utils.startDestination
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var firebase: Firebase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // FirebaseApp.initializeApp(this)
+        //firebase.auth.currentUser
         setContent {
             LoginSignUpComposeTheme {
                 // MyNavHost()
                 // MainScreen()
                 val navController = rememberNavController()
-                val currentDestination: Destination? = navController.appCurrentDestinationAsState().value
+                //val currentDestination: Destination? = navController.appCurrentDestinationAsState().value
                 Scaffold(
                     bottomBar = {
-                        BottomBarDestination.values().forEach { destination ->
-                            currentDestination?.let { destination.graph.contains(it) }?.let { value ->
-                                if (value) {
-                                    BottomBar(navController)
-                                }
-                            }
-                        }
+                        BottomBar(navController)
                     }
                 ) {
-
                     DestinationsNavHost(
                         modifier = Modifier.padding(it),
                         navGraph = NavGraphs.root,
                         navController = navController, //!! this is important
                         dependenciesContainerBuilder = {
+                            dependency(hiltViewModel<MainActivityViewModel>(this@MainActivity))
                             // To tie SettingsViewModel to "settings" nested navigation graph,
                             // making it available to all screens that belong to it
 //                            when {
@@ -109,15 +110,18 @@ fun BottomBar(navController: NavController) {
     navController.backQueue.forEach {
         Log.d(TAG, "BackStack: ${it.destination.route}")
     }
-    Log.d(TAG,"\n")
+    Log.d(TAG, "\n")
     //val active = NavGraphs.home.contains()
-    BottomNavigation {
+    BottomNavigation(
+        contentColor = AppTheme.colors.onProfileButtonColor,
+        backgroundColor = AppTheme.colors.profileHighLightColor
+    ) {
         BottomBarDestination.values().forEach { destination ->
             currentDestination?.let { destination.graph.contains(it) }?.let {
                 BottomNavigationItem(
                     selected = it,
                     onClick = {
-                        Log.d(TAG,"Graph route = ${destination.graph.route}")
+                        Log.d(TAG, "Graph route = ${destination.graph.route}")
 //                        Log.d(TAG, " Graph route : ${destination.graph.route}")
 //                        Log.d(TAG, " Graph start route : ${destination.graph.startRoute.route}")
                         navController.navigateTo(destination.graph) {
@@ -129,6 +133,7 @@ fun BottomBar(navController: NavController) {
                         }
                     },
                     icon = { Icon(destination.icon, contentDescription = "") },
+
                     //label = { Text(stringResource(destination.label)) },
                 )
             }

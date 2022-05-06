@@ -22,27 +22,38 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.Navigation
+import com.example.presentation.MainActivityViewModel
+import com.example.presentation.ui.screens.Graphs.NavGraphs
 import com.example.presentation.ui.screens.navHost.LOGIN_SIGNUP_ROUTE
 import com.example.presentation.ui.theme.Purple700
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
 
 @Composable
-fun AnimatedSplashScreen(navController: NavHostController) {
+fun AnimatedSplashScreen(
+    navigator: DestinationsNavigator,
+    viewModel: MainActivityViewModel
+) {
     var startAnimation by remember { mutableStateOf(false) }
     val alphaAnim = animateFloatAsState(
         targetValue = if (startAnimation) 1f else 0f,
         animationSpec = tween(
-            durationMillis = 3000
+            durationMillis = 1000
         )
     )
     LaunchedEffect(key1 = true) {
         startAnimation = true
-        delay(2000)
-        navController.popBackStack()
-        navController.navigate(LOGIN_SIGNUP_ROUTE)
+        delay(1000)
+        navigator.popBackStack()
+        if (viewModel.isCurrent) {
+            navigator.navigate(NavGraphs.bottom)
+        } else {
+            navigator.navigate(NavGraphs.loginSignUp)
+        }
+
     }
     Splash(alpha = alphaAnim.value)
-
 }
 
 @Composable

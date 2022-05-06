@@ -8,5 +8,8 @@ fun Home(
     viewModel: HomeViewModel,
     navigateSecondScreen: () -> Unit,
 ) {
-    Greeting(viewModel = viewModel, navigateSecondScreen = navigateSecondScreen)
+    Greeting(
+        viewModel = viewModel,
+        navigateSecondScreen = navigateSecondScreen
+    )
 }

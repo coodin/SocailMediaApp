@@ -12,12 +12,13 @@ import com.example.presentation.ui.screens.SignupScreen.SignUpViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.navigateTo
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.utils.startDestination
 
 
-@RootNavGraph(start = true)
+@RootNavGraph
 @NavGraph
 annotation class LoginSignUpNavGraph(
     val start: Boolean = false
@@ -27,18 +28,17 @@ annotation class LoginSignUpNavGraph(
 @Destination
 @Composable
 fun LoginDes(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     Login(
         viewModel = viewModel,
-        navigateMain = { id ->
-            navController.navigateTo(HomeDesDestination(HomeDesNavArgs(id = id))) {
-                navController.popBackStack()
+        navigateMain = {
+            navigator.navigate(NavGraphs.bottom) {
+                navigator.popBackStack()
             }
         },
-        //navigateMain = {},
-        navigateSignUp = { navController.navigateTo(SignUpDesDestination) }
+        navigateSignUp = { navigator.navigate(SignUpDesDestination) }
     )
 }
 
@@ -47,12 +47,12 @@ fun LoginDes(
 @Destination
 @Composable
 fun SignUpDes(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
     SignUpScreen(viewModel = viewModel, navigateMain = { id ->
-        navController.navigateTo(HomeDesDestination(HomeDesNavArgs(id = id))) {
-            navController.popBackStack()
+        navigator.navigate(NavGraphs.bottom) {
+            navigator.popBackStack()
         }
     })
 }

@@ -3,6 +3,7 @@ package com.example.di
 
 //import com.example.data.repository.FirebaseRepository
 import com.example.data.repository.FirebaseRepository
+import com.example.domain.use_case.CurrenUser
 import com.example.domain.use_case.GetUser
 import com.example.domain.use_case.GetUsers
 import com.example.domain.use_case.UseCases
@@ -37,6 +38,7 @@ object AppModule {
     @Provides
     fun provideUseCases(repository: FirebaseRepository) = UseCases(
         getUsers = GetUsers(repository),
-        getUser = GetUser(repository)
+        getUser = GetUser(repository),
+        currentUser = CurrenUser(repository)
     )
 }

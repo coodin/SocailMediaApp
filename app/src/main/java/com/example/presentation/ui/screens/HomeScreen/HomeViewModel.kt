@@ -7,17 +7,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.repository.FirebaseRepository
 import com.example.domain.model.City
 import com.example.domain.model.UserProfile
 import com.example.domain.use_case.UseCases
 import com.example.presentation.ui.screens.Graphs.destinations.HomeDesDestination
-import com.example.utility.EXCEPTION
 import com.example.utility.State
 import com.example.utility.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,7 +32,6 @@ class HomeViewModel @Inject constructor(
         private set
     var documentState by mutableStateOf<State<City?>?>(null)
         private set
-    //var job: Job? = null
 
     override fun onCleared() {
         super.onCleared()
@@ -45,8 +41,7 @@ class HomeViewModel @Inject constructor(
     init {
         Log.d(TAG, "The HomeViewModel has been created")
         Log.d(TAG, "Idoftheuser${HomeDesDestination.argsFrom(savedStateHandle).id}")
-
-        getUsers()
+        getUser()
     }
 
     private fun getUsers() {
@@ -55,11 +50,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun getUser(userID: String) {
+    private fun getUser() {
         viewModelScope.launch {
-            useCases.getUser(userID).collect { value -> userState = value }
+            useCases.getUser().collect { value -> userState = value }
         }
     }
+
 
 //    fun onStop() {
 //        job?.cancel()

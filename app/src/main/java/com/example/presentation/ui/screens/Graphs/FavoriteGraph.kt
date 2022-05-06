@@ -10,6 +10,7 @@ import com.example.presentation.ui.screens.Graphs.destinations.CheatDesDestinati
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.navigateTo
 
 @BottomNavGraph
@@ -22,16 +23,18 @@ annotation class FavoriteNavGraph(
 @Destination
 @Composable
 fun FavoriteDes(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: FavoriteViewModel = hiltViewModel()
 ) {
     Favorite(
         favoriteViewModel = viewModel,
-        navigateChatScreen = { navController.navigateTo(CheatDesDestination) }
+        navigateChatScreen = { navigator.navigate(CheatDesDestination) }
     )
 }
 
-@FavoriteNavGraph
+// I had extracted  this destination from graph because I didn't want to be seen bottom navbar after I
+// navigated to this destination.
+//@FavoriteNavGraph
 @Destination
 @Composable
 fun CheatDes() {
