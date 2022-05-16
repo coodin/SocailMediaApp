@@ -8,6 +8,7 @@ import com.example.utility.State
 import com.example.utility.TAG
 import com.example.utility.listenDocument
 import com.example.utility.listenDocuments
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
@@ -15,18 +16,17 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
-class FirebaseRepository @Inject constructor(val firebase: Firebase) : UserRepository {
+class UserRepositoryImpl @Inject constructor(val db: FirebaseFirestore, val auth: FirebaseAuth) : UserRepository {
 
 
-    private val db = firebase.firestore
+    //private val db = firebase.firestore
+    //private val auth = firebase.auth
 
     suspend fun addCity() {
         val data = City(
@@ -385,12 +385,8 @@ class FirebaseRepository @Inject constructor(val firebase: Firebase) : UserRepos
         return db.collection("users").document(userId).listenDocument()
     }
 
-    override suspend fun currentUser(): Boolean {
-        return firebase.auth.currentUser != null
-    }
-
     private fun currentUserId(): String {
-        return firebase.auth.currentUser?.uid ?: "no User"
+        return auth.currentUser?.uid ?: "no User"
     }
 
 

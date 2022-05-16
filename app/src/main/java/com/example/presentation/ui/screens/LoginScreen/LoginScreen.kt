@@ -43,8 +43,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun Login(
     viewModel: LoginViewModel,
-    navigateMain: (uid: String?) -> Unit,
-    //navigateMain: (uid: UserProfile?) -> Unit,
     navigateSignUp: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
@@ -55,36 +53,34 @@ fun Login(
     val snackbarHostState = remember { SnackbarHostState() }
     val loadingState = viewModel.loadingState
 
+    val loading by  remember {
+        derivedStateOf { loadingState is State.Loading }
+    }
+
     val annotatedString = buildAnnotatedString {
         withStyle(style = SpanStyle(fontSize = 16.sp)) {
             append("Don't have an account? ")
         }
-        withStyle(style = SpanStyle(color = Color.Blue, fontSize = 16.sp, fontWeight = FontWeight.Bold)) {
+        withStyle(
+            style = SpanStyle(
+                color = Color.Blue,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        ) {
             append("Sign up here")
         }
     }
-//    val launcher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts
-//            .StartActivityForResult()
-//    ) {
-//
-//    }
-//
-//    BoxWithConstraints {
-//
-//    }
 
     LaunchedEffect(key1 = loadingState) {
         when (loadingState) {
-            is State.Success -> {
-                navigateMain(loadingState.data?.uid)
-            }
             is State.Failed -> {
                 snackbarHostState.showSnackbar(
                     actionLabel = "Dismiss",
                     message = loadingState.message,
                     duration = SnackbarDuration.Long
                 )
+                viewModel.changeToDefault()
             }
             else -> {}
         }
@@ -94,7 +90,6 @@ fun Login(
         scaffoldState = rememberScaffoldState(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) {
-        val loading = loadingState is State.Loading
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -208,7 +203,6 @@ fun Login(
                         onClick = {
                             coroutineScope.launch {
                                 viewModel.signIn(email.trim(), password.trim())
-                                //navigateMain("123")
                             }
                         },
                         modifier = Modifier
@@ -252,9 +246,10 @@ fun Login(
 @Composable
 fun GetContentExample() {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        imageUri = uri
-    }
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            imageUri = uri
+        }
     val painter = rememberAsyncImagePainter(imageUri)
 
 

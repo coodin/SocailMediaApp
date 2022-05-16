@@ -3,6 +3,7 @@ package com.example.presentation.ui.screens.Graphs
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.presentation.MainActivityViewModel
 import com.example.presentation.ui.screens.CheatScreen
 import com.example.presentation.ui.screens.FavortieScreen.Favorite
 import com.example.presentation.ui.screens.FavortieScreen.FavoriteViewModel
@@ -14,6 +15,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.navigateTo
 
 @BottomNavGraph
+//@RootNavGraph
 @NavGraph
 annotation class FavoriteNavGraph(
     val start: Boolean = false
@@ -24,7 +26,8 @@ annotation class FavoriteNavGraph(
 @Composable
 fun FavoriteDes(
     navigator: DestinationsNavigator,
-    viewModel: FavoriteViewModel = hiltViewModel()
+    viewModel: FavoriteViewModel = hiltViewModel(),
+    mainActivityViewModel: MainActivityViewModel
 ) {
     Favorite(
         favoriteViewModel = viewModel,
@@ -37,6 +40,8 @@ fun FavoriteDes(
 //@FavoriteNavGraph
 @Destination
 @Composable
-fun CheatDes() {
+fun CheatDes(
+    mainActivityViewModel: MainActivityViewModel
+) {
     CheatScreen()
 }

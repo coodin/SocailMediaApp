@@ -5,66 +5,83 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
-import com.example.presentation.ui.screens.FavortieScreen.FavoriteViewModel
-import com.example.presentation.ui.screens.FeedScreen.FeedViewModel
 import com.example.presentation.ui.screens.Graphs.BottomBarDestination
 import com.example.presentation.ui.screens.Graphs.NavGraphs
 import com.example.presentation.ui.screens.Graphs.appCurrentDestinationAsState
 import com.example.presentation.ui.screens.Graphs.destinations.Destination
-import com.example.presentation.ui.screens.HomeScreen.HomeViewModel
-import com.example.presentation.ui.screens.ProfileScreen.ProfileViewModel
+import com.example.presentation.ui.screens.Graphs.destinations.LoginDesDestination
+import com.example.presentation.ui.screens.settingsScreen.SettingsScreenViewModel
 import com.example.presentation.ui.theme.AppTheme
 import com.example.presentation.ui.theme.LoginSignUpComposeTheme
 import com.example.utility.TAG
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.FirebaseApp
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigateTo
 import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.contains
-import com.ramcosta.composedestinations.utils.startDestination
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var firebase: Firebase
+    private val activityViewModel: MainActivityViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // FirebaseApp.initializeApp(this)
+        //FirebaseApp.initializeApp(this)
         //firebase.auth.currentUser
         setContent {
             LoginSignUpComposeTheme {
                 // MyNavHost()
                 // MainScreen()
                 val navController = rememberNavController()
-                //val currentDestination: Destination? = navController.appCurrentDestinationAsState().value
                 Scaffold(
                     bottomBar = {
                         BottomBar(navController)
                     }
                 ) {
+                    LaunchedEffect(key1 = activityViewModel.isCurrent) {
+                        when (activityViewModel.isCurrent) {
+                            true -> {
+                                Log.d(TAG, "User has been signed ")
+                                navController.navigateTo(NavGraphs.bottom) {
+                                    popUpTo(NavGraphs.root)
+                                }
+                            }
+                            false -> {
+                                Log.d(TAG, "User has been signed out")
+                                navController.navigateTo(LoginDesDestination) {
+                                    popUpTo(NavGraphs.root)
+                                }
+                            }
+                            else -> {
+                                Log.d(TAG, "system has entered the null case")
+                            }
+                        }
+                    }
                     DestinationsNavHost(
                         modifier = Modifier.padding(it),
                         navGraph = NavGraphs.root,
                         navController = navController, //!! this is important
                         dependenciesContainerBuilder = {
-                            dependency(hiltViewModel<MainActivityViewModel>(this@MainActivity))
+                            dependency(activityViewModel)
+                            if (NavGraphs.settings.contains(destination)) {
+                                val parentEntry = remember {
+                                    navController.getBackStackEntry(NavGraphs.settings.route)
+                                }
+                                dependency(hiltViewModel<SettingsScreenViewModel>(parentEntry))
+                            }
                             // To tie SettingsViewModel to "settings" nested navigation graph,
                             // making it available to all screens that belong to it
 //                            when {
@@ -103,43 +120,54 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun BottomBar(navController: NavController) {
-    val currentDestination: Destination? = navController.appCurrentDestinationAsState().value
-
-
-    //Log.d(TAG, "First Graph: ${navController.graph.findStartDestination()}")
-    navController.backQueue.forEach {
-        Log.d(TAG, "BackStack: ${it.destination.route}")
+    val currentDestination = navController.appCurrentDestinationAsState().value
+    var currentState by remember {
+        mutableStateOf(false)
     }
-    Log.d(TAG, "\n")
-    //val active = NavGraphs.home.contains()
-    BottomNavigation(
-        contentColor = AppTheme.colors.onProfileButtonColor,
-        backgroundColor = AppTheme.colors.profileHighLightColor
-    ) {
+    LaunchedEffect(key1 = currentDestination) {
+        navController.backQueue.forEach {
+            Log.d(TAG, "BackStack: ${it.destination.route}")
+        }
+        Log.d(TAG, "\n")
         BottomBarDestination.values().forEach { destination ->
-            currentDestination?.let { destination.graph.contains(it) }?.let {
-                BottomNavigationItem(
-                    selected = it,
-                    onClick = {
-                        Log.d(TAG, "Graph route = ${destination.graph.route}")
+            if(currentDestination?.let { destination.graph.contains(it) } == true){
+                currentState = true
+                return@LaunchedEffect
+            }else{
+                currentState = false
+            }
+        }
+    }
+
+    if (currentState) {
+        BottomNavigation(
+            contentColor = AppTheme.colors.onProfileButtonColor,
+            backgroundColor = AppTheme.colors.profileHighLightColor
+        ) {
+            BottomBarDestination.values().forEach { destination ->
+                currentDestination?.let { destination.graph.contains(it) }?.let { value ->
+                    BottomNavigationItem(
+                        selected = value,
+                        onClick = {
+                            Log.d(TAG, "Graph route = ${destination.graph.route}")
 //                        Log.d(TAG, " Graph route : ${destination.graph.route}")
 //                        Log.d(TAG, " Graph start route : ${destination.graph.startRoute.route}")
-                        navController.navigateTo(destination.graph) {
-                            launchSingleTop = true
-                            popUpTo(NavGraphs.bottom) {
-                                saveState = true
+                            navController.navigateTo(destination.graph) {
+                                launchSingleTop = true
+                                popUpTo(NavGraphs.bottom) {
+                                    saveState = true
+                                }
+                                restoreState = true
                             }
-                            restoreState = true
-                        }
-                    },
-                    icon = { Icon(destination.icon, contentDescription = "") },
-
-                    //label = { Text(stringResource(destination.label)) },
-                )
+                        },
+                        icon = { Icon(destination.icon, contentDescription = "") },
+                    )
+                }
             }
         }
     }
 }
+
 //
 ////@RootNavGraph(start = true)
 //@SettingsNavGraph(start = true)
@@ -176,14 +204,14 @@ fun BottomBar(navController: NavController) {
 //@Composable
 //fun Lol(
 //    navigator: DestinationsNavigator,
-//    viewModel: MyScreenViewModel = hiltViewModel()
+//    activityViewModel: MyScreenViewModel = hiltViewModel()
 //) {
-//    //val navigator = viewModel.data.navigator
+//    //val navigator = activityViewModel.data.navigator
 //    LaunchedEffect(key1 = Unit) {
-//        Log.d(TAG, "ID : ${viewModel.data.id}")
-//        Log.d(TAG, "Group Name : ${viewModel.data.groupName}")
+//        Log.d(TAG, "ID : ${activityViewModel.data.id}")
+//        Log.d(TAG, "Group Name : ${activityViewModel.data.groupName}")
 //    }
-//    //val viewModel = hiltViewModel<MyScreenViewModel>()
+//    //val activityViewModel = hiltViewModel<MyScreenViewModel>()
 //    Box(
 //        modifier = Modifier.fillMaxSize(),
 //        contentAlignment = Alignment.Center

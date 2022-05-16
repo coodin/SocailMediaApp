@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.City
 import com.example.domain.model.UserProfile
-import com.example.domain.use_case.UseCases
-import com.example.presentation.ui.screens.Graphs.destinations.HomeDesDestination
+import com.example.domain.use_case.user.AuthUseCases
+import com.example.domain.use_case.user.UserUseCases
 import com.example.utility.State
 import com.example.utility.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val useCases: UseCases
+    private val userUseCases: UserUseCases,
+    private val authUseCases: AuthUseCases
 ) : ViewModel() {
     // private val repository = FirebaseRepository()
 
@@ -28,9 +29,11 @@ class HomeViewModel @Inject constructor(
 //    val dataset:StateFlow<ResultOf<QuerySnapshot?>?> = _dataset
     var usersState by mutableStateOf<State<List<UserProfile?>>?>(null)
         private set
-    var userState by mutableStateOf<State<UserProfile?>?>(null)
-        private set
+//    var userState by mutableStateOf<State<UserProfile?>?>(null)
+//        private set
     var documentState by mutableStateOf<State<City?>?>(null)
+        private set
+    var isCurrent by mutableStateOf<State<Boolean>?>(null)
         private set
 
     override fun onCleared() {
@@ -40,21 +43,26 @@ class HomeViewModel @Inject constructor(
 
     init {
         Log.d(TAG, "The HomeViewModel has been created")
-        Log.d(TAG, "Idoftheuser${HomeDesDestination.argsFrom(savedStateHandle).id}")
-        getUser()
+        //getUser()
     }
 
     private fun getUsers() {
         viewModelScope.launch {
-            useCases.getUsers().collect { value -> usersState = value }
+            userUseCases.getUsers().collect { value -> usersState = value }
         }
     }
 
-    private fun getUser() {
-        viewModelScope.launch {
-            useCases.getUser().collect { value -> userState = value }
-        }
-    }
+//    private fun getUser() {
+//        viewModelScope.launch {
+//            userUseCases.getUser().collect { value -> userState = value }
+//        }
+//    }
+
+//    fun signOut() {
+//        viewModelScope.launch {
+//            authUseCases.signOut().collect { value -> isCurrent = value }
+//        }
+//    }
 
 
 //    fun onStop() {

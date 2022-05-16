@@ -7,13 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.UserProfile
+import com.example.domain.use_case.user.AuthUseCases
 import com.example.utility.*
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,45 +19,34 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val firebase: Firebase,
+    private val authUseCases: AuthUseCases,
+    val userPreferenceData: UserPreferenceData
 ) : ViewModel() {
 
     init {
         Log.d(TAG, "The SingUpViewModel has been created")
     }
 
-    var loadingState by mutableStateOf<State<FirebaseUser?>>(State.idle())
+    var loadingState by mutableStateOf<State<Boolean?>>(State.idle())
         private set
 
     suspend fun signUp(email: String, password: String) {
-        val db = firebase.firestore
+//        viewModelScope.launch(Dispatchers.IO) {
+//            authUseCases.signUpWithEmailUser(email, password)
+//                .collect { value -> loadingState = value }
+//        }
         viewModelScope.launch(Dispatchers.IO) {
-            if (email.isEmpty() || password.isEmpty()) {
-                val message = "The email or password field is empty"
-                loadingState = State.failed(message)
-            } else {
-                try {
-                    loadingState = State.loading()
-                    val user = firebase.auth.createUserWithEmailAndPassword(email, password).await().user
-                    user?.let {
-                        val profile = UserProfile(
-                            uid = it.uid,
-                            email =  it.email ?: ""
-                        )
-                        db.collection("users").document(it.uid)
-                            .set(profile, SetOptions.merge()).await()
+            authUseCases.signUpWithEmailUser(email, password)
+                .collect { value ->
+                    when (value) {
+                        is State.Success -> {
+                            userPreferenceData.changeEmail(email)
+                        }
+                        else -> {}
                     }
-                    //sendVerificationEmail(user)
-                    loadingState = State.success(user)
-                    Log.d(TAG, "User signed Up by firebase auth $user")
-                } catch (e: Exception) {
-                    val customErrorMessage = e.firebaseException()
-                    loadingState = State.failed(customErrorMessage)
-                    Log.d(EXCEPTION, "createUserWithEmail:failure ${e.localizedMessage}")
+                    loadingState = value
                 }
-            }
         }
-
     }
 
     override fun onCleared() {

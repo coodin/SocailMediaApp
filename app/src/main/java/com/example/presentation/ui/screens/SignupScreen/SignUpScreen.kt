@@ -25,20 +25,23 @@ import com.example.utility.State
 import kotlinx.coroutines.launch
 
 @Composable
-fun SignUpScreen(viewModel: SignUpViewModel, navigateMain: (String?) -> Unit) {
+fun SignUpScreen(viewModel: SignUpViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     //val scrollState = rememberScrollState()
     val snackbarHostState = remember { SnackbarHostState() }
     val loadingState = viewModel.loadingState
+    //val userPreferenceData = viewModel.userPreferenceData
 
+    val  loading by  remember {
+        derivedStateOf {
+            loadingState is State.Loading
+        }
+    }
 
     LaunchedEffect(key1 = loadingState) {
         when (loadingState) {
-            is State.Success -> {
-                navigateMain(loadingState.data?.uid)
-            }
             is State.Failed -> {
                 snackbarHostState.showSnackbar(
                     actionLabel = "Dismiss",
@@ -55,7 +58,6 @@ fun SignUpScreen(viewModel: SignUpViewModel, navigateMain: (String?) -> Unit) {
         scaffoldState = rememberScaffoldState(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) {
-        val loading = loadingState is State.Loading
         val scrollState = rememberScrollState()
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -82,7 +84,10 @@ fun SignUpScreen(viewModel: SignUpViewModel, navigateMain: (String?) -> Unit) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     VerticalSpacer(space = AppTheme.dimens.grid_2)
-                    AutoSizeText(text = "Sign up takes only", textStyle = MaterialTheme.typography.h3)
+                    AutoSizeText(
+                        text = "Sign up takes only",
+                        textStyle = MaterialTheme.typography.h3
+                    )
                     AutoSizeText(text = "2 minutes", textStyle = MaterialTheme.typography.h3)
 //                    Text(
 //                        text = "Sign up takes only 2 minutes",

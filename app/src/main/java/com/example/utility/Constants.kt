@@ -4,14 +4,12 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -25,19 +23,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.decodeBitmap
-import androidx.core.graphics.decodeDrawable
-import androidx.core.net.toUri
 import com.example.presentation.ui.theme.AppTheme
-import com.google.accompanist.permissions.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope.coroutineContext
 import kotlinx.coroutines.withContext
-import okhttp3.internal.wait
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.Executor
-import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -45,6 +36,8 @@ import kotlin.coroutines.suspendCoroutine
 const val TAG = "Firebase"
 const val EXCEPTION = "AuthException"
 const val MyError = "AndroidError"
+val DEFAULTDOMAIN = "loginsignupcompose.page.link"
+
 
 val COLOR_NORMAL = Color(0xffEDEFF4)
 val COLOR_SELECTED = Color(0xff496DE2)

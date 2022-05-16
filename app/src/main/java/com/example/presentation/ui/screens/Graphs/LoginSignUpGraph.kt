@@ -3,6 +3,7 @@ package com.example.presentation.ui.screens.Graphs
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.presentation.MainActivityViewModel
 import com.example.presentation.ui.screens.Graphs.destinations.HomeDesDestination
 import com.example.presentation.ui.screens.Graphs.destinations.SignUpDesDestination
 import com.example.presentation.ui.screens.LoginScreen.Login
@@ -17,42 +18,37 @@ import com.ramcosta.composedestinations.navigation.navigateTo
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.utils.startDestination
 
+//
+//@RootNavGraph
+//@NavGraph
+//annotation class LoginSignUpNavGraph(
+//    val start: Boolean = false
+//)
 
-@RootNavGraph
-@NavGraph
-annotation class LoginSignUpNavGraph(
-    val start: Boolean = false
-)
-
-@LoginSignUpNavGraph(start = true)
+//@LoginSignUpNavGraph(start = true)
 @Destination
 @Composable
 fun LoginDes(
     navigator: DestinationsNavigator,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    mainActivityViewModel: MainActivityViewModel
 ) {
     Login(
         viewModel = viewModel,
-        navigateMain = {
-            navigator.navigate(NavGraphs.bottom) {
-                navigator.popBackStack()
-            }
-        },
         navigateSignUp = { navigator.navigate(SignUpDesDestination) }
     )
 }
 
 
-@LoginSignUpNavGraph
+//@LoginSignUpNavGraph
 @Destination
 @Composable
 fun SignUpDes(
     navigator: DestinationsNavigator,
-    viewModel: SignUpViewModel = hiltViewModel()
+    viewModel: SignUpViewModel = hiltViewModel(),
+    mainActivityViewModel: MainActivityViewModel
 ) {
-    SignUpScreen(viewModel = viewModel, navigateMain = { id ->
-        navigator.navigate(NavGraphs.bottom) {
-            navigator.popBackStack()
-        }
-    })
+    SignUpScreen(
+        viewModel = viewModel
+    )
 }

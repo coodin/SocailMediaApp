@@ -86,7 +86,7 @@ suspend inline fun <reified T> DocumentReference.listenDocument() =
         callbackFlow {
             val snapshotListener = documentReference.addSnapshotListener() { value, error ->
                 val response = if (error == null) {
-                    if (value != null) {
+                    if (value != null && value.exists()) {
                         State.success(value.toObject<T>())
                     } else {
                         State.failed("Document not found")

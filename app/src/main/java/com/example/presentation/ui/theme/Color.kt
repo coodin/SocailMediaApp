@@ -15,8 +15,9 @@ data class ExtendedColors(
     val profileTextColor: Color,
     val profileSoftTextColor: Color,
     val lineGrayColor: Color,
-    val chatBackgroundColor: Color
-
+    val chatBackgroundColor: Color,
+    val editScreenTextColor: Color,
+    val editScreenTitleTextColor:Color
 )
 
 val LocalExtendedColors = staticCompositionLocalOf {
@@ -30,7 +31,9 @@ val extendedColors = ExtendedColors(
     profileSoftTextColor = Color("#9597A1".toColorInt()),
     addFriendBackgroundColor = Color.White,
     lineGrayColor = Color("#F2F2F2".toColorInt()),
-    chatBackgroundColor = Color("#979797".toColorInt())
+    chatBackgroundColor = Color("#979797".toColorInt()),
+    editScreenTextColor = Color("#2A2E43".toColorInt()),
+    editScreenTitleTextColor = Color("#5D5C5C".toColorInt())
 )
 
 

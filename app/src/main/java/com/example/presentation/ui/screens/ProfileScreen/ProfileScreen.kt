@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import com.example.loginsignupcompose.R
+import com.example.presentation.MainActivityViewModel
 import com.example.presentation.ui.screens.Components.VerticalSpacer
 import com.example.presentation.ui.theme.AppTheme
 import com.example.utility.*
@@ -62,7 +63,11 @@ import java.io.File
 
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel, navigateProfileComposable: () -> Unit) {
+fun ProfileScreen(
+    viewModel: ProfileViewModel,
+    navigateProfileComposable: () -> Unit,
+    mainActivityViewModel: MainActivityViewModel
+) {
     val focusManager = LocalFocusManager.current
     var isPasswordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -393,116 +398,116 @@ fun CommentAndShared(modifier: Modifier) {
 }
 
 
-@Composable
-fun ProfileSettings(viewModel: ProfileViewModel) {
-    val focusManager = LocalFocusManager.current
-    var isPasswordVisible by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        VerticalSpacer(space = AppTheme.dimens.grid_4)
-        ImagePickerView(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            lastSelectedImage = viewModel.pickedImage,
-            onSelection = {
-                viewModel.pickedImage = it
-            }
-        )
-        VerticalSpacer(space = AppTheme.dimens.grid_4)
-        AppTextField(
-            text = viewModel.firstName,
-            placeholder = "First Name",
-            onChange = { text ->
-                viewModel.firstName = text
-            },
-            imeAction = ImeAction.Next,//Show next as IME button
-            keyboardType = KeyboardType.Text,
-            keyBoardActions = KeyboardActions(
-                onNext = {
-                    focusManager.moveFocus(FocusDirection.Down)
-                }
-            )
-        )
-
-        VerticalSpacer(space = AppTheme.dimens.grid_2)
-
-        AppTextField(
-            text = viewModel.password,
-            placeholder = "Password",
-            onChange = { text ->
-                viewModel.password = text
-            },
-            leadingIcon = {
-                IconButton(onClick = {
-                    isPasswordVisible = !isPasswordVisible
-                }) {
-                    Icon(
-                        imageVector = if (isPasswordVisible)
-                            Icons.Filled.Visibility
-                        else
-                            Icons.Filled.VisibilityOff,
-                        contentDescription = "Password Visibility"
-                    )
-                }
-            },
-            imeAction = ImeAction.Next,//Show next as IME button
-            keyboardType = KeyboardType.Password,
-            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyBoardActions = KeyboardActions(
-                onNext = {
-                    focusManager.moveFocus(FocusDirection.Down)
-                }
-            )
-        )
-
-        VerticalSpacer(space = AppTheme.dimens.grid_2)
-
-        AppTextField(
-            modifier = Modifier.padding(vertical = 8.dp),
-            leadingIcon = {
-                CountryPickerView(
-                    countries = viewModel.countriesList,
-                    selectedCountry = viewModel.mobileCountry,
-                    onSelection = { selectedCountry ->
-                        viewModel.mobileCountry = selectedCountry
-                        viewModel.mobileCountryCode = selectedCountry.code
-                    },
-                )
-            },
-            text = viewModel.mobileNumber,
-            onChange = { number ->
-                viewModel.mobileNumber = number
-            },
-            placeholder = "Mobile Number",
-            imeAction = ImeAction.Next,//Show next as IME button
-            keyboardType = KeyboardType.Phone,
-            keyBoardActions = KeyboardActions(
-                onNext = {
-                    focusManager.moveFocus(FocusDirection.Down)
-                }
-            )
-        )
-
-        VerticalSpacer(space = AppTheme.dimens.grid_2)
-
-        AppTextField(
-            modifier = Modifier.clickable {
-                viewModel.showDatePickerDialog(context)
-            },
-            text = viewModel.dateOfBirth,
-            placeholder = "Birthdate",
-            onChange = {
-                viewModel.dateOfBirth = it
-            },
-            isEnabled = false
-        )
-    }
-}
+//@Composable
+//fun EditProfile(viewModel: ProfileViewModel) {
+//    val focusManager = LocalFocusManager.current
+//    var isPasswordVisible by remember { mutableStateOf(false) }
+//    val context = LocalContext.current
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(horizontal = 16.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Top
+//    ) {
+//        VerticalSpacer(space = AppTheme.dimens.grid_4)
+//        ImagePickerView(
+//            modifier = Modifier.align(Alignment.CenterHorizontally),
+//            lastSelectedImage = viewModel.pickedImage,
+//            onSelection = {
+//                viewModel.pickedImage = it
+//            }
+//        )
+//        VerticalSpacer(space = AppTheme.dimens.grid_4)
+//        AppTextField(
+//            text = viewModel.firstName,
+//            placeholder = "First Name",
+//            onChange = { text ->
+//                viewModel.firstName = text
+//            },
+//            imeAction = ImeAction.Next,//Show next as IME button
+//            keyboardType = KeyboardType.Text,
+//            keyBoardActions = KeyboardActions(
+//                onNext = {
+//                    focusManager.moveFocus(FocusDirection.Down)
+//                }
+//            )
+//        )
+//
+//        VerticalSpacer(space = AppTheme.dimens.grid_2)
+//
+//        AppTextField(
+//            text = viewModel.password,
+//            placeholder = "Password",
+//            onChange = { text ->
+//                viewModel.password = text
+//            },
+//            leadingIcon = {
+//                IconButton(onClick = {
+//                    isPasswordVisible = !isPasswordVisible
+//                }) {
+//                    Icon(
+//                        imageVector = if (isPasswordVisible)
+//                            Icons.Filled.Visibility
+//                        else
+//                            Icons.Filled.VisibilityOff,
+//                        contentDescription = "Password Visibility"
+//                    )
+//                }
+//            },
+//            imeAction = ImeAction.Next,//Show next as IME button
+//            keyboardType = KeyboardType.Password,
+//            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+//            keyBoardActions = KeyboardActions(
+//                onNext = {
+//                    focusManager.moveFocus(FocusDirection.Down)
+//                }
+//            )
+//        )
+//
+//        VerticalSpacer(space = AppTheme.dimens.grid_2)
+//
+//        AppTextField(
+//            modifier = Modifier.padding(vertical = 8.dp),
+//            leadingIcon = {
+//                CountryPickerView(
+//                    countries = viewModel.countriesList,
+//                    selectedCountry = viewModel.mobileCountry,
+//                    onSelection = { selectedCountry ->
+//                        viewModel.mobileCountry = selectedCountry
+//                        viewModel.mobileCountryCode = selectedCountry.code
+//                    },
+//                )
+//            },
+//            text = viewModel.mobileNumber,
+//            onChange = { number ->
+//                viewModel.mobileNumber = number
+//            },
+//            placeholder = "Mobile Number",
+//            imeAction = ImeAction.Next,//Show next as IME button
+//            keyboardType = KeyboardType.Phone,
+//            keyBoardActions = KeyboardActions(
+//                onNext = {
+//                    focusManager.moveFocus(FocusDirection.Down)
+//                }
+//            )
+//        )
+//
+//        VerticalSpacer(space = AppTheme.dimens.grid_2)
+//
+//        AppTextField(
+//            modifier = Modifier.clickable {
+//                viewModel.showDatePickerDialog(context)
+//            },
+//            text = viewModel.dateOfBirth,
+//            placeholder = "Birthdate",
+//            onChange = {
+//                viewModel.dateOfBirth = it
+//            },
+//            isEnabled = false
+//        )
+//    }
+//}
 
 
 @Composable

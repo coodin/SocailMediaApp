@@ -21,10 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import androidx.navigation.Navigation
 import com.example.presentation.MainActivityViewModel
 import com.example.presentation.ui.screens.Graphs.NavGraphs
+import com.example.presentation.ui.screens.Graphs.destinations.LoginDesDestination
 import com.example.presentation.ui.screens.navHost.LOGIN_SIGNUP_ROUTE
 import com.example.presentation.ui.theme.Purple700
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -44,14 +46,14 @@ fun AnimatedSplashScreen(
     )
     LaunchedEffect(key1 = true) {
         startAnimation = true
-        delay(1000)
-        navigator.popBackStack()
-        if (viewModel.isCurrent) {
-            navigator.navigate(NavGraphs.bottom)
-        } else {
-            navigator.navigate(NavGraphs.loginSignUp)
-        }
-
+        delay(2500)
+        viewModel.authState()
+        viewModel.getUser()
+//        if (activityViewModel.isCurrent) {
+//            navigator.navigate(NavGraphs.bottom)
+//        } else {
+//            navigator.navigate(LoginDesDestination)
+//        }
     }
     Splash(alpha = alphaAnim.value)
 }

@@ -136,8 +136,8 @@ fun MainScreen(
             startDestination = NavigationRoutes.LoginSingUpRoutes.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            maincontent(navController)
-            loginSignUpScreen(navController)
+//            maincontent(navController)
+//            loginSignUpScreen(navController)
         }
     }
 }

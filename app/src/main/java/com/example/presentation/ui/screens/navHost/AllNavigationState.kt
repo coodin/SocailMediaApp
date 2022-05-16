@@ -30,8 +30,8 @@ sealed class NavigationRoutes(
     }
 
     object Main : NavigationRoutes(route = NAV_MAIN) {
-        fun createRoute(uid: String): String {
-            return "Main/$uid"
+        fun createRoute(): String {
+            return "Main"
         }
     }
 

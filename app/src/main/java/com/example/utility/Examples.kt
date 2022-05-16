@@ -501,222 +501,222 @@ fun BottomSheetComposable() {
 }
 
 
-@Composable
-fun Greeting(
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    viewModel: HomeViewModel,
-    navigateSecondScreen: () -> Unit,
-) {
-    // Creates a CoroutineScope bound to the MoviesScreen's lifecycle
-    val scope = rememberCoroutineScope()
-    //val scrollState = rememberScrollState()
-
-    // If `lifecycleOwner` changes, dispose and reset the effect
-//    DisposableEffect(lifecycleOwner) {
-//        // Create an observer that triggers our remembered callbacks
-//        // for sending analytics events
-//        val observer = LifecycleEventObserver { _, event ->
-//            if (event == Lifecycle.Event.ON_STOP) {
-//                viewModel.onStop()
-//            } else if (event == Lifecycle.Event.ON_START) {
-//                viewModel.onStart()
+//@Composable
+//fun Greeting(
+//    scaffoldState: ScaffoldState = rememberScaffoldState(),
+//    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+//    viewModel: HomeViewModel,
+//    navigateSecondScreen: () -> Unit,
+//) {
+//    // Creates a CoroutineScope bound to the MoviesScreen's lifecycle
+//    val scope = rememberCoroutineScope()
+//    //val scrollState = rememberScrollState()
+//
+//    // If `lifecycleOwner` changes, dispose and reset the effect
+////    DisposableEffect(lifecycleOwner) {
+////        // Create an observer that triggers our remembered callbacks
+////        // for sending analytics events
+////        val observer = LifecycleEventObserver { _, event ->
+////            if (event == Lifecycle.Event.ON_STOP) {
+////                activityViewModel.onStop()
+////            } else if (event == Lifecycle.Event.ON_START) {
+////                activityViewModel.onStart()
+////            }
+////        }
+////
+////        // Add the observer to the lifecycle
+////        lifecycleOwner.lifecycle.addObserver(observer)
+////
+////        // When the effect leaves the Composition, remove the observer
+////        onDispose {
+////            Log.d(TAG, "Effect left from the  composition ")
+////            lifecycleOwner.lifecycle.removeObserver(observer)
+////        }
+////    }
+//
+//    Scaffold(
+//        scaffoldState = scaffoldState,
+//        drawerContent = {
+//            Text("Drawer title", modifier = Modifier.padding(16.dp))
+//            Divider()
+//            // Drawer items
+//        },
+//        topBar = {
+////            TopAppBar {
+////                IconButton(onClick = {
+////                    scope.launch {
+////                        scaffoldState.drawerState.apply {
+////                            if (isClosed) open() else close()
+////                        }
+////                    }
+////                }) {
+////                    Icon(
+////                        imageVector = Icons.Default.Menu,
+////                        contentDescription = "Home button",
+////                        tint = MaterialTheme.colors.onSurface
+////                    )
+////                }
+////            }
+//        },
+//        floatingActionButton = {
+//            FloatingActionButton(onClick = {
+//                scope.launch {
+//                    navigateSecondScreen()
+//                }
+//            }) {
+//                Icon(
+//                    imageVector = Icons.Filled.Favorite,
+//                    contentDescription =
+//                    "Favorite Icon"
+//                )
 //            }
-//        }
-//
-//        // Add the observer to the lifecycle
-//        lifecycleOwner.lifecycle.addObserver(observer)
-//
-//        // When the effect leaves the Composition, remove the observer
-//        onDispose {
-//            Log.d(TAG, "Effect left from the  composition ")
-//            lifecycleOwner.lifecycle.removeObserver(observer)
-//        }
-//    }
-
-    Scaffold(
-        scaffoldState = scaffoldState,
-        drawerContent = {
-            Text("Drawer title", modifier = Modifier.padding(16.dp))
-            Divider()
-            // Drawer items
-        },
-        topBar = {
-//            TopAppBar {
-//                IconButton(onClick = {
-//                    scope.launch {
-//                        scaffoldState.drawerState.apply {
-//                            if (isClosed) open() else close()
+//        },
+//        floatingActionButtonPosition = FabPosition.End,
+//    ) { padding ->
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize()
+//        ) {
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .background(MaterialTheme.colors.primary)
+//            ) {
+//                when (val dataSet = viewModel.userState) {
+//                    is State.Failed -> {
+//                        Text(
+//                            dataSet.message,
+//                        )
+//                    }
+//                    is State.Success -> {
+//                        val dataset = dataSet.data
+//                        LazyColumn(
+//                            modifier = Modifier
+//                                .wrapContentWidth()
+//                                .background(Color.DarkGray)
+//                        ) {
+//                            item {
+//                                Row(
+//                                    modifier = Modifier.fillMaxWidth(),
+//                                    horizontalArrangement = Arrangement.SpaceEvenly
+//                                ) {
+//                                    CompositionLocalProvider(
+//                                        LocalContentColor provides Color.White,
+//                                        LocalTextStyle provides MaterialTheme.typography.body1
+//                                    ) {
+//                                        Text(dataset?.email ?: "")
+//                                        //Text(it?.country ?: "")
+//                                        //Text("${it?.population}")
+//                                    }
+//                                }
+//                            }
 //                        }
 //                    }
-//                }) {
-//                    Icon(
-//                        imageVector = Icons.Default.Menu,
-//                        contentDescription = "Home button",
-//                        tint = MaterialTheme.colors.onSurface
-//                    )
+//                    else -> {}
 //                }
 //            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                scope.launch {
-                    navigateSecondScreen()
-                }
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.Favorite,
-                    contentDescription =
-                    "Favorite Icon"
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End,
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.primary)
-            ) {
-                when (val dataSet = viewModel.userState) {
-                    is State.Failed -> {
-                        Text(
-                            dataSet.message,
-                        )
-                    }
-                    is State.Success -> {
-                        val dataset = dataSet.data
-                        LazyColumn(
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .background(Color.DarkGray)
-                        ) {
-                            item{
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    CompositionLocalProvider(
-                                        LocalContentColor provides Color.White,
-                                        LocalTextStyle provides MaterialTheme.typography.body1
-                                    ) {
-                                        Text(dataset?.email ?: "")
-                                        //Text(it?.country ?: "")
-                                        //Text("${it?.population}")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else -> {}
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .background(MaterialTheme.colors.background)
-                    .align(Alignment.BottomCenter)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(top = 10.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Button(
-                        onClick = { /*viewModel.addCity()*/ },
-                        colors = ButtonDefaults
-                            .buttonColors(
-                                contentColor = Color.White,
-                                backgroundColor = MaterialTheme.colors.secondary
-                            )
-                    ) {
-                        Text(text = "Add City")
-                    }
-                    Button(
-                        onClick = { /*viewModel.updateCity()*/ },
-                        colors = ButtonDefaults
-                            .buttonColors(
-                                contentColor = Color.White,
-                                backgroundColor = MaterialTheme.colors.secondary
-                            )
-                    ) {
-                        Text(text = "Update City")
-                    }
-                    Button(
-                        onClick = { /*viewModel.updateTimeStamp() */ }, colors = ButtonDefaults
-                            .buttonColors(
-                                contentColor = Color.White,
-                                backgroundColor = MaterialTheme.colors.secondary
-                            )
-                    ) {
-                        Text(
-                            text = "Update TimeStamp",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-                Row(
-                    modifier = Modifier
-                        .padding(top = 10.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Button(
-                        onClick = { /*viewModel.deleteDocument()*/ }, colors = ButtonDefaults
-                            .buttonColors(
-                                contentColor = Color.White,
-                                backgroundColor = MaterialTheme.colors.secondary
-                            )
-                    ) {
-                        Text(
-                            text = "Delete Document",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    Button(
-                        onClick = {
-                            // viewModel.getDocument()
-                        }, colors =
-                        ButtonDefaults
-                            .buttonColors(
-                                contentColor = Color.White,
-                                backgroundColor = MaterialTheme.colors.secondary
-                            )
-                    ) {
-                        Text(
-                            text = "Get Document",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    when (val documentState = viewModel.documentState) {
-                        is State.Success -> {
-                            Text(text = documentState.data?.name ?: "")
-                            Text(text = documentState.data?.country ?: "")
-                            Text(text = documentState.data?.population.toString())
-                        }
-                        is State.Loading -> {
-                            CircularProgressIndicator()
-                        }
-                        is State.Failed -> {
-                            Text(documentState.message)
-                        }
-                        else -> {}
-                    }
-                }
-            }
-        }
-    }
-}
+//            Column(
+//                modifier = Modifier
+//                    .wrapContentWidth()
+//                    .background(MaterialTheme.colors.background)
+//                    .align(Alignment.BottomCenter)
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .padding(top = 10.dp)
+//                        .fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceAround
+//                ) {
+//                    Button(
+//                        onClick = { viewModel.signOut() },
+//                        colors = ButtonDefaults
+//                            .buttonColors(
+//                                contentColor = Color.White,
+//                                backgroundColor = MaterialTheme.colors.secondary
+//                            )
+//                    ) {
+//                        Text(text = "Sign Out")
+//                    }
+//                    Button(
+//                        onClick = { /*activityViewModel.updateCity()*/ },
+//                        colors = ButtonDefaults
+//                            .buttonColors(
+//                                contentColor = Color.White,
+//                                backgroundColor = MaterialTheme.colors.secondary
+//                            )
+//                    ) {
+//                        Text(text = "Update City")
+//                    }
+//                    Button(
+//                        onClick = { /*activityViewModel.updateTimeStamp() */ }, colors = ButtonDefaults
+//                            .buttonColors(
+//                                contentColor = Color.White,
+//                                backgroundColor = MaterialTheme.colors.secondary
+//                            )
+//                    ) {
+//                        Text(
+//                            text = "Update TimeStamp",
+//                            maxLines = 1,
+//                            overflow = TextOverflow.Ellipsis
+//                        )
+//                    }
+//                }
+//                Row(
+//                    modifier = Modifier
+//                        .padding(top = 10.dp)
+//                        .fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceAround
+//                ) {
+//                    Button(
+//                        onClick = { /*activityViewModel.deleteDocument()*/ }, colors = ButtonDefaults
+//                            .buttonColors(
+//                                contentColor = Color.White,
+//                                backgroundColor = MaterialTheme.colors.secondary
+//                            )
+//                    ) {
+//                        Text(
+//                            text = "Delete Document",
+//                            maxLines = 1,
+//                            overflow = TextOverflow.Ellipsis
+//                        )
+//                    }
+//                    Button(
+//                        onClick = {
+//                            // activityViewModel.getDocument()
+//                        }, colors =
+//                        ButtonDefaults
+//                            .buttonColors(
+//                                contentColor = Color.White,
+//                                backgroundColor = MaterialTheme.colors.secondary
+//                            )
+//                    ) {
+//                        Text(
+//                            text = "Get Document",
+//                            maxLines = 1,
+//                            overflow = TextOverflow.Ellipsis
+//                        )
+//                    }
+//                }
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceAround
+//                ) {
+//                    when (val documentState = viewModel.documentState) {
+//                        is State.Success -> {
+//                            Text(text = documentState.data?.name ?: "")
+//                            Text(text = documentState.data?.country ?: "")
+//                            Text(text = documentState.data?.population.toString())
+//                        }
+//                        is State.Loading -> {
+//                            CircularProgressIndicator()
+//                        }
+//                        is State.Failed -> {
+//                            Text(documentState.message)
+//                        }
+//                        else -> {}
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}

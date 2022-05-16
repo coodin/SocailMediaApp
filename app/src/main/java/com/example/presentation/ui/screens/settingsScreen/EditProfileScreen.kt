@@ -26,7 +26,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.domain.model.Video
+import com.example.presentation.MainActivityViewModel
 import com.example.presentation.ui.screens.Components.VerticalSpacer
+import com.example.presentation.ui.screens.settingsScreen.SettingsScreenViewModel
 import com.example.presentation.ui.theme.AppTheme
 import com.example.utility.TAG
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -40,7 +42,11 @@ import kotlin.time.toTimeUnit
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun SettingsScreen(navigateBackProfile: () -> Unit) {
+fun EditProfile(
+    navigateBackProfile: () -> Unit,
+    mainActivityViewModel: MainActivityViewModel,
+    settingsScreenViewModel: SettingsScreenViewModel
+) {
     var name by remember {
         mutableStateOf("")
     }
@@ -70,7 +76,7 @@ fun SettingsScreen(navigateBackProfile: () -> Unit) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
-            topBar = { SettingsAppBar(navigateBackProfile) }
+            topBar = { MyAppBar(navigateBackToProfile = navigateBackProfile, text = "Edit Profile") }
         ) {
             Column(
                 modifier = Modifier
@@ -116,15 +122,13 @@ fun SettingsScreen(navigateBackProfile: () -> Unit) {
                 }
             }
         }
-        if (permissionsState.allPermissionsGranted) {
-            if (isOpen) {
-                CameraCapture(
-                    //isOpen = isOpen,
-                    closeCameraHandler = onActivateAlert,
-                    modifier = Modifier,
-                    onImageFile = { file -> imageUri = file }
-                )
-            }
+        if (permissionsState.allPermissionsGranted && isOpen) {
+            CameraCapture(
+                //isOpen = isOpen,
+                closeCameraHandler = onActivateAlert,
+                modifier = Modifier,
+                onImageFile = { file -> imageUri = file }
+            )
         } else {
             val rational = getTextToShowGivenPermissions(
                 permissions = permissionsState.revokedPermissions,
@@ -318,7 +322,7 @@ fun SettingsInput(labelText: String, inputValue: String, onValueChange: (String)
 }
 
 @Composable
-fun SettingsAppBar(navigateBackToProfile: () -> Unit) {
+fun MyAppBar(text: String, navigateBackToProfile: () -> Unit) {
     TopAppBar(
         backgroundColor = Color.Transparent,
         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -339,13 +343,13 @@ fun SettingsAppBar(navigateBackToProfile: () -> Unit) {
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back to Profile",
+                    contentDescription = "",
                     tint = AppTheme.colors.profileHighLightColor
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "Profile",
+                text = text,
                 style = AppTheme.typography.NetflixF20W500,
                 color = AppTheme.colors.profileTextColor,
                 letterSpacing = 1.sp

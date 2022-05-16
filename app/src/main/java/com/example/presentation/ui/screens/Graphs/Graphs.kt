@@ -24,7 +24,7 @@ enum class BottomBarDestination(
     Profile(NavGraphs.profile, Icons.Default.PersonOutline)
 }
 
-@RootNavGraph
+@RootNavGraph()
 @NavGraph
 annotation class BottomNavGraph(
     val start: Boolean = false
@@ -34,7 +34,7 @@ annotation class BottomNavGraph(
 @Destination
 @Composable
 fun SplashDes(navigator:DestinationsNavigator,viewModel: MainActivityViewModel) {
-    AnimatedSplashScreen(navigator = navigator, viewModel = viewModel)
+    AnimatedSplashScreen(navigator = navigator,viewModel)
 }
 
 
